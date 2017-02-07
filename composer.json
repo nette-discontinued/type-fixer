@@ -1,0 +1,26 @@
+{
+	"name": "nette/type-fixer",
+	"description": "A tool to automatically update your code for new Nette.",
+	"type": "project",
+	"keywords": ["PHP 7", "type hints"],
+	"license": ["BSD-3-Clause"],
+	"authors": [
+		{
+			"name": "David Grudl",
+			"homepage": "https://davidgrudl.com"
+		}
+	],
+	"require": {
+		"php": ">= 7.1",
+		"nikic/php-parser": "^3.0",
+		"dg/parser-reflection": "^1.3",
+		"nette/finder": "^2.4",
+		"nette/command-line": "^1.2",
+		"tracy/tracy": "^2.4"
+	},
+	"autoload": {
+		"classmap": ["src/"]
+	},
+	"bin": ["updater"],
+	"minimum-stability": "stable"
+}
