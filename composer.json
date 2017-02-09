@@ -1,8 +1,8 @@
 {
 	"name": "nette/type-fixer",
-	"description": "A tool to automatically update your code for new Nette.",
+	"description": "🆙  A tool to automatically update your code.",
 	"type": "project",
-	"keywords": ["PHP 7", "type hints"],
+	"keywords": ["nette", "php 7", "type hints"],
 	"license": ["BSD-3-Clause"],
 	"authors": [
 		{
