@@ -38,7 +38,7 @@ final class Analyzer
 		$this->dryRun = $dryRun;
 		foreach ($classes as $class) {
 			foreach ($class->getMethods() as $method) {
-				if ($method instanceof ParserReflection\ReflectionMethod) {
+				if ($method->getDeclaringClass()->getName() === $class->getName()) {
 					$this->analyzeMethod($method);
 				}
 			}
