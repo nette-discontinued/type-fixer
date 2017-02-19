@@ -21,6 +21,5 @@
 	"autoload": {
 		"classmap": ["src/"]
 	},
-	"bin": ["updater"],
 	"minimum-stability": "stable"
 }
