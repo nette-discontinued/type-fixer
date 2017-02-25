@@ -94,12 +94,12 @@ final class Analyzer
 			$patches[$this->findReturnTypeHintTokenPos($method)] = ': '
 				. ($protoMethod->getReturnType()->allowsNull() ? '?' : '')
 				. ($protoMethod->getReturnType()->isBuiltin() ? '' : '\\')
-				. $protoMethod->getReturnType();
+				. $this->getType($protoMethod);
 
 		} elseif ($protoMethod->getReturnType()
 			&& (!$method->getReturnType()
 				|| (!$protoMethod->getReturnType()->allowsNull() && $method->getReturnType()->allowsNull())
-				|| ((string) $method->getReturnType() !== (string) $protoMethod->getReturnType())
+				|| ($this->getType($method) !== $this->getType($protoMethod))
 			)
 		) {
 			$this->write($method, "return type is not compatible with $protoName");
@@ -130,9 +130,9 @@ final class Analyzer
 					$patches[$tokenPos] =
 						($protoParam->allowsNull() && (!$protoParam->isDefaultValueAvailable() || $protoParam->getDefaultValue() !== null) ? '?' : '')
 						. ($protoParam->getType()->isBuiltin() ? '' : '\\')
-						. $protoParam->getType() . ' ';
+						. $this->getType($protoParam) . ' ';
 
-				} elseif (((string) $protoParam->getType() !== (string) $param->getType())
+				} elseif (($this->getType($protoParam) !== $this->getType($param))
 					|| ($protoParam->hasType() && $protoParam->getType()->allowsNull()
 						&& !($param->hasType() && $param->getType()->allowsNull()))
 				) {
@@ -143,6 +143,22 @@ final class Analyzer
 
 		if ($oldPatches !== $patches) {
 			$this->write($method, 'added missing type hints', 'white/blue');
+		}
+	}
+
+
+	private function getType($subject): string
+	{
+		$type = $subject instanceof \ReflectionMethod
+			? (string) $subject->getReturnType()
+			: (string) $subject->getType();
+
+		if (strcasecmp($type, 'self') === 0) {
+			return $subject->getDeclaringClass()->getName();
+		} elseif (strcasecmp($type, 'parent') === 0) {
+			return $subject->getDeclaringClass()->getParentClass()->getName();
+		} else {
+			return $type;
 		}
 	}
 
