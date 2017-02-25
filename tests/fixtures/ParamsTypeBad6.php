@@ -1,6 +1,6 @@
 <?php
 
-namespace ParamsTypeOk4;
+namespace ParamsTypeBad6;
 
 class A
 {
