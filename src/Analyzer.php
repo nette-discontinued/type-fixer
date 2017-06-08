@@ -113,6 +113,7 @@ final class Analyzer
 			$params = $method->getParameters();
 			foreach ($protoMethod->getParameters() as $pos => $protoParam) {
 				if (!isset($params[$pos])) {
+					$this->write($method, "missing parameter \${$protoParam->getName()}");
 					continue;
 				}
 				$param = $params[$pos];
