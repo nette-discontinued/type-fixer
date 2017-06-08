@@ -54,7 +54,7 @@ if ($cmd->isEmpty()) {
 
 $options = $cmd->parse();
 
-$finder = Nette\Utils\Finder::findFiles('*.php')
+$finder = Nette\Utils\Finder::findFiles('*.php', '*.phpt')
 	->from($options['path'])
 	->exclude('.git', ...$options['--ignore']);
 
