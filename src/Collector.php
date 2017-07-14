@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Nette\TypeFixer;
 
 use Go\ParserReflection;
-use Nette\CommandLine\Console;
 use PhpParser;
 
 
@@ -14,13 +13,13 @@ final class Collector
 	/** @var ParserReflection\ReflectionClass[] */
 	private $classes;
 
-	/** @var Console */
-	private $console;
+	/** @var Reporter */
+	private $reporter;
 
 
-	public function __construct()
+	public function __construct(Reporter $reporter)
 	{
-		$this->console = new Console;
+		$this->reporter = $reporter;
 	}
 
 
@@ -41,11 +40,11 @@ final class Collector
 		$reflectionContext = new ReflectionContext($locator);
 
 		foreach ($iterator as $fileName) {
-			echo $fileName . str_repeat(' ', 30) . "\r";
+			$this->reporter->progress((string) $fileName);
 			try {
 				$file = new ParserReflection\ReflectionFile($fileName, null, $reflectionContext);
 			} catch (PhpParser\Error $e) {
-				echo $this->console->color('white/red', 'ERROR:') . " {$e->getMessage()} in file $fileName\n";
+				$this->reporter->add("{$e->getMessage()} in file $fileName", Reporter::TYPE_ERROR);
 				continue;
 			}
 			$this->scanForClasses($file);
@@ -59,7 +58,7 @@ final class Collector
 			foreach ($namespace->getClasses() as $class) {
 				$name = $class->getName();
 				if (isset($this->classes[$name])) {
-					echo $this->console->color('white/red', 'WARNING:') . " duplicate class $name found in {$class->getFileName()} and {$this->classes[$name]->getFileName()}\n";
+					$this->reporter->add("duplicate class $name found in {$class->getFileName()} and {$this->classes[$name]->getFileName()}", Reporter::TYPE_WARNING);
 				}
 				$this->classes[$name] = $class;
 			}
@@ -75,7 +74,7 @@ final class Collector
 				$class->getMethods();
 			} catch (\InvalidArgumentException $e) {
 				unset($this->classes[$name]);
-				echo $this->console->color('white/red', 'ERROR:') . " unable to complete class {$class->getName()}: {$e->getMessage()}\n";
+				$this->reporter->add("unable to complete class {$class->getName()}: {$e->getMessage()}", Reporter::TYPE_ERROR);
 			}
 		}
 	}

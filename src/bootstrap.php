@@ -58,8 +58,23 @@ $finder = Nette\Utils\Finder::findFiles('*.php', '*.phpt')
 	->from($options['path'])
 	->exclude('.git', ...$options['--ignore']);
 
-$collector = new Collector;
+$reporter = new class implements Reporter {
+
+	public function add(string $message, string $type): void
+	{
+		$console = new Nette\CommandLine\Console;
+		echo $console->color($type === self::TYPE_ERROR ? 'white/red' : 'white/blue', $type . ':'), " $message\n";
+	}
+
+
+	public function progress(string $message): void
+	{
+		echo $message . str_repeat(' ', 30) . "\r";
+	}
+};
+
+$collector = new Collector($reporter);
 $classes = $collector->collect($finder);
 
-$analyzer = new Analyzer;
+$analyzer = new Analyzer($reporter);
 $analyzer->analyze($classes, !$options['--fix']);

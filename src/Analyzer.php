@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Nette\TypeFixer;
 
 use Go\ParserReflection;
-use Nette\CommandLine\Console;
 use PhpParser;
 
 
@@ -20,13 +19,13 @@ final class Analyzer
 	/** @var bool */
 	private $dryRun;
 
-	/** @var Console */
-	private $console;
+	/** @var Reporter */
+	private $reporter;
 
 
-	public function __construct()
+	public function __construct(Reporter $reporter)
 	{
-		$this->console = new Console;
+		$this->reporter = $reporter;
 	}
 
 
@@ -73,6 +72,7 @@ final class Analyzer
 	{
 		$protoClass = $protoMethod->getDeclaringClass()->getName();
 		$protoName = $protoClass . '::' . $method->getName() . '()';
+		$methodName = $method->getDeclaringClass()->getName() . '::' . $method->getName() . '()';
 		$patches = &$this->filePatches[$method->getFileName()];
 		$oldPatches = $patches;
 
@@ -83,11 +83,11 @@ final class Analyzer
 		$analyzed = true;
 
 		if ($protoMethod->isFinal()) {
-			$this->write($method, "overriding final method $protoName");
+			$this->reporter->add("$methodName overriding final method $protoName", Reporter::TYPE_ERROR);
 		}
 
 		if ($protoMethod->returnsReference() && !$method->returnsReference()) {
-			$this->write($method, "must return by reference as $protoName");
+			$this->reporter->add("$methodName must return by reference as $protoName", Reporter::TYPE_ERROR);
 		}
 
 		if (!$this->dryRun && $protoMethod->getReturnType() && !$method->getReturnType()) {
@@ -102,28 +102,28 @@ final class Analyzer
 				|| ($this->getType($method) !== $this->getType($protoMethod))
 			)
 		) {
-			$this->write($method, "return type is not compatible with $protoName");
+			$this->reporter->add("$methodName return type is not compatible with $protoName", Reporter::TYPE_ERROR);
 		}
 
 		if (!$method->isConstructor()) {
 			if ($protoMethod->getNumberOfRequiredParameters() < $method->getNumberOfRequiredParameters()) {
-				$this->write($method, "greater number or required parameters than $protoName");
+				$this->reporter->add("$methodName greater number or required parameters than $protoName", Reporter::TYPE_ERROR);
 			}
 
 			$params = $method->getParameters();
 			foreach ($protoMethod->getParameters() as $pos => $protoParam) {
 				if (!isset($params[$pos])) {
-					$this->write($method, "missing parameter \${$protoParam->getName()}");
+					$this->reporter->add("$methodName missing parameter \${$protoParam->getName()}", Reporter::TYPE_ERROR);
 					continue;
 				}
 				$param = $params[$pos];
 
 				if ($protoParam->isPassedByReference() !== $param->isPassedByReference()) {
-					$this->write($method, "passing by reference of parameter \${$param->getName()} is not compatible with $protoName");
+					$this->reporter->add("$methodName passing by reference of parameter \${$param->getName()} is not compatible with $protoName", Reporter::TYPE_ERROR);
 				}
 
 				if ($protoParam->isVariadic() !== $param->isVariadic()) {
-					$this->write($method, "variadic parameter \${$param->getName()} is not compatible with $protoName");
+					$this->reporter->add("$methodName variadic parameter \${$param->getName()} is not compatible with $protoName", Reporter::TYPE_ERROR);
 				}
 
 				if (!$this->dryRun && $protoParam->hasType() && !$param->hasType()) {
@@ -137,13 +137,13 @@ final class Analyzer
 					|| ($protoParam->hasType() && $protoParam->getType()->allowsNull()
 						&& !($param->hasType() && $param->getType()->allowsNull()))
 				) {
-					$this->write($method, "type of parameter \${$param->getName()} is not compatible with $protoName");
+					$this->reporter->add("$methodName type of parameter \${$param->getName()} is not compatible with $protoName", Reporter::TYPE_ERROR);
 				}
 			}
 		}
 
 		if ($oldPatches !== $patches) {
-			$this->write($method, 'added missing type hints', 'white/blue');
+			$this->reporter->add("$methodName added missing type hints", Reporter::TYPE_FIXED);
 		}
 	}
 
@@ -191,11 +191,5 @@ final class Analyzer
 			$s .= is_array($token) ? $token[1] : $token;
 		}
 		file_put_contents($file, $s);
-	}
-
-
-	private function write(\ReflectionMethod $method, $message, $color = 'white/red'): void
-	{
-		echo $this->console->color($color, $method->getDeclaringClass()->getName() . '::' . $method->getName() . '()') . " $message\n";
 	}
 }
