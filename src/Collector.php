@@ -40,7 +40,8 @@ final class Collector
 		$reflectionContext = new ReflectionContext($locator);
 
 		foreach ($iterator as $fileName) {
-			$this->reporter->progress((string) $fileName);
+			$fileName = (string) $fileName;
+			$this->reporter->progress($fileName);
 			try {
 				$file = new ParserReflection\ReflectionFile($fileName, null, $reflectionContext);
 			} catch (PhpParser\Error $e) {
