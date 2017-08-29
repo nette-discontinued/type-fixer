@@ -59,7 +59,6 @@ $finder = Nette\Utils\Finder::findFiles('*.php', '*.phpt')
 	->exclude('.git', ...$options['--ignore']);
 
 $reporter = new class implements Reporter {
-
 	public function add(string $message, string $type): void
 	{
 		$console = new Nette\CommandLine\Console;
