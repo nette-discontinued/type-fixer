@@ -28,7 +28,7 @@ set_error_handler(function ($severity, $message, $file, $line) {
 
 
 echo '
-Nette Type Fixer v0.1
+Nette Type Fixer v0.3
 ---------------------
 ';
 
