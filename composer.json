@@ -1,6 +1,6 @@
 {
 	"name": "nette/type-fixer",
-	"description": "🆙  A tool to automatically update your code.",
+	"description": "🆙  A tool to automatically update type hints in your PHP code.",
 	"type": "project",
 	"keywords": ["nette", "php 7", "type hints"],
 	"license": ["BSD-3-Clause"],
