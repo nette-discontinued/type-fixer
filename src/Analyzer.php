@@ -150,9 +150,8 @@ final class Analyzer
 
 	private function getType($subject): string
 	{
-		$type = $subject instanceof \ReflectionMethod
-			? (string) $subject->getReturnType()
-			: (string) $subject->getType();
+		$type = $subject instanceof \ReflectionMethod ? $subject->getReturnType() : $subject->getType();
+		$type = $type ? $type->getName() : '';
 
 		if (strcasecmp($type, 'self') === 0) {
 			return $subject->getDeclaringClass()->getName();

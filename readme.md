@@ -36,7 +36,7 @@ typefixer --fix /myproject
 Installation
 ------------
 
-It requires PHP version 7.1 and supports PHP up to 7.3.
+It requires PHP version 7.1 and supports PHP up to 7.4.
 
 Install it via Composer. This project is not meant to be run as a dependency, so install it as standalone:
 
