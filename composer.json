@@ -26,6 +26,7 @@
 		"classmap": ["src/"]
 	},
 	"minimum-stability": "stable",
+	"bin": ["typefixer"],
 	"scripts": {
 		"phpstan": "phpstan analyse",
 		"tester": "tester tests -s"
