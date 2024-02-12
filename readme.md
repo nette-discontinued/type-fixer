@@ -1,14 +1,5 @@
-Nette TypeFixer 🆙
-==================
-
-[![Downloads this Month](https://img.shields.io/packagist/dm/nette/type-fixer.svg)](https://packagist.org/packages/nette/type-fixer)
-[![Tests](https://github.com/nette/type-fixer/workflows/Tests/badge.svg?branch=master)](https://github.com/nette/type-fixer/actions)
-[![Latest Stable Version](https://poser.pugx.org/nette/type-fixer/v/stable)](https://github.com/nette/type-fixer/releases)
-[![License](https://img.shields.io/badge/license-New%20BSD-blue.svg)](https://github.com/nette/type-fixer/blob/master/license.md)
-
-
-Introduction
-------------
+Nette TypeFixer [DISCONTINUED]
+==============================
 
 A tool to automatically update type hints in your PHP code.
 
